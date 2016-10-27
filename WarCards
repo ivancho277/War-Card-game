@@ -1,0 +1,256 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Funbox
+{
+
+//class for a card object
+public class Card
+{
+    //member varibables
+    private char value;
+    private string suit;
+
+    char[] cards = { '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A' };
+    string[] suits = { "Spades", "Clubs", "Hearts", "Diamonds" };
+    //constructor
+    public Card(char value_, string suit_)
+    {
+        value = value_;
+        suit = suit_;
+    }
+    //compares two cards to see if values are greater than, less than, or equal.
+    //returns 0 for equal, 1 for greater than, -1 for less than.
+    public int CardCompare(Card other)
+    {
+        int thisCardValue = 0;
+        int otherCardValue = 0;
+        for (int i = 0; i < cards.Length; i++)
+        {
+            if (this.value == cards[i])
+                thisCardValue = i;
+            if (other.value == cards[i])
+                otherCardValue = i;
+        }
+
+        if (thisCardValue == otherCardValue)
+            return 0;
+        else if (thisCardValue > otherCardValue)
+                return 1;
+            else
+                return -1;
+    }
+
+    //to string method for card object
+    public string toString()
+    {
+        string theCard =  value.ToString() + " of " + suit;
+        return theCard;
+    }
+
+    //draws a small card graphic
+    public void cardGraphic()
+    {
+       
+        Console.WriteLine();
+        Console.WriteLine("|" + suit);
+        Console.WriteLine("|" + "     " + "|");
+        Console.WriteLine("|" + "     " + "|");
+        Console.WriteLine("|" + "  " + value + "  " + "|");
+        Console.WriteLine("|" + "     " + "|");
+        Console.WriteLine("|" + "     " + "|");
+        Console.WriteLine("|" + suit);
+        Console.WriteLine();
+    }
+}
+//Class for building a deck
+public class Deck
+{
+    char[] cards = { '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A' };
+    string[] suits = {"Spades", "Clubs", "Hearts", "Diamonds"};
+    //member variable
+    public List<Card> deck = new List<Card>();
+
+    public Deck()
+    {
+        buildDeck();
+    }
+    //constructor calls this method and a new deck is built in order
+    private void buildDeck()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            for (int j = 0; j < 13; j++)
+                deck.Add(new Card(cards[j], suits[i]));
+        }
+    }
+    //method to shuffle deck
+    public void shuffleDeck()
+    {
+        Random rand = new Random();
+        Card temp;
+        for(int i = 0; i < 52; i++)
+        {
+            int randNum = rand.Next(0, 52);
+            temp = deck[i];
+            deck[i] = deck[randNum];
+            deck[randNum] = temp;
+        }
+    }
+    //Print deck 
+    public void printDeck()
+    {
+        for (int i = 0; i < 52; i++)
+        {
+            Console.WriteLine(this.deck[i].toString());
+        }
+    }
+
+
+   public char cardNumber(int x)
+    {
+        return cards[x];
+    }
+
+   public string cardSuit(int x)
+    {
+        return suits[x];
+    }
+    
+
+}
+
+public static class War
+{
+
+            public static Queue player1 = new Queue();
+            public static Queue player2 = new Queue();
+            public static Deck one = new Deck();
+            public static int turnCounter = 0;
+
+            public static void WarGreeting()
+            {
+            Console.WriteLine("You are now playing a game of war.");
+            Console.WriteLine("-----------------------------");
+            }
+           
+           public static void shuffle()
+           {
+            one.shuffleDeck();
+           }
+           public static void buildHands()
+           {
+               for (int i = 0; i < 52; i += 2)
+               {
+                   player1.Enqueue(one.deck[i]);
+                   player2.Enqueue(one.deck[i + 1]);
+
+               }
+           }
+           
+           //game logic
+           public static void war()
+           {  
+                //while both players are not at 0
+               while (player1.Count != 0 && player2.Count != 0)
+               {  
+                  //each player dequeues a card
+                   Card p1Card = (Card)player1.Dequeue();
+                   Card p2Card = (Card)player2.Dequeue();
+                   
+                   //print card graphic
+                   Console.WriteLine("__player 1__");
+                   p1Card.cardGraphic();
+                   Console.WriteLine("__player 2__");
+                   p2Card.cardGraphic();
+                   
+                   //compare to see who won
+                   if (p1Card.CardCompare(p2Card) == 1)
+                   {
+                       player1.Enqueue(p1Card);
+                       player1.Enqueue(p2Card);
+                       Console.WriteLine("Player 1 wins hand.");
+                       // p1Score++;
+                       turnCounter++;
+                       Console.ReadLine();
+
+                   }
+                   else if (p1Card.CardCompare(p2Card) == -1)
+                   {
+                       player2.Enqueue(p2Card);
+                       player2.Enqueue(p1Card);
+                       Console.WriteLine("Player 2 wins hand.");
+                       //  p2Score++;
+                       turnCounter++;
+                       Console.ReadLine();
+                   }
+                   else
+                   {
+                        //war scenario if both cards are equal
+                       try
+                       {
+                           Card one = (Card)player1.Dequeue();
+                           Card two = (Card)player1.Dequeue();
+                           Console.WriteLine("-----p1------");
+                           one.cardGraphic();
+                           two.cardGraphic();
+                           Console.WriteLine("-------p2-----");
+                           Card three = (Card)player2.Dequeue();
+                           Card four = (Card)player2.Dequeue();
+                           three.cardGraphic();
+                           four.cardGraphic();
+                           turnCounter++;
+                           war(); //recursive call 
+                       }
+                       catch (System.InvalidOperationException)
+                       {
+                           break;
+                       }
+
+
+                   }
+
+               }
+           }
+
+
+}
+
+    class Program
+    {
+
+        static void Main(string[] args)
+        {
+            //war greeting
+            War.WarGreeting();
+            //shuffle deck
+            War.shuffle();
+            //build each hand for player one and player 2.
+            War.buildHands();
+            Console.WriteLine("-----------------------------");
+            //play the game
+            War.war();
+            
+            //write out winner
+            if (War.player1.Count == 0)
+            {
+                Console.WriteLine("Player 2 wins ");
+            }
+            if (War.player2.Count == 0)
+                Console.WriteLine("Player 1  wins ");
+            Console.WriteLine("Amount of turns: {0}", War.turnCounter);
+
+            Console.ReadLine();
+            System.Threading.Thread.Sleep(5000);
+            
+ 
+ 
+        }
+    }
+}
+
+
