@@ -1,2 +1,2 @@
 # War-Card-game
-I have never posted to gitHub before, this is just a game of War I wrote in c# for practice.
+My first game. User can play the PC in a card game of war.
